@@ -29,8 +29,6 @@ class MainApplication(tk.Frame):
 		self.backup = None
 		self.map_name = ''
 
-		self.LOAD_TEST_MAPS = False
-
 		PADDING = 4
 		HPADDING = PADDING / 2
 
@@ -112,6 +110,7 @@ class MainApplication(tk.Frame):
 			button._confirm_action = confirm[0] if confirm else False
 			column += 1
 
+		self.LOAD_TEST_MAPS = True
 		self.set_map(os.getenv('APPDATA') + '/Dustforce/user/level_src/Test1' if self.LOAD_TEST_MAPS else None)
 		self.centre()
 	# END __init__

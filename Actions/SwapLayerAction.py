@@ -147,16 +147,29 @@ class SwapLayerAction(Action):
 					fog_per = vars['fog_per'].value[1]
 					fog_colour = vars['fog_colour'].value[1]
 
+					sub_layers = range(
+						-1,
+						25 if 'has_sub_layers' in vars and vars['has_sub_layers'].value else 0
+					)
+
 					if copy:
-						fog_per[layer2].value = fog_per[layer1].value
-						fog_colour[layer2].value = fog_colour[layer1].value
+						for layer_sub in sub_layers:
+							sub_layer_index_1 = layer1 + 21 + layer_sub * 21
+							sub_layer_index_2 = layer2 + 21 + layer_sub * 21
+
+							fog_per[sub_layer_index_2].value = fog_per[sub_layer_index_1].value
+							fog_colour[sub_layer_index_2].value = fog_colour[sub_layer_index_1].value
 					else:
-						tmp_per = fog_per[layer1].value
-						tmp_colour = fog_colour[layer1].value
-						fog_per[layer1].value = fog_per[layer2].value
-						fog_colour[layer1].value = fog_colour[layer2].value
-						fog_per[layer2].value = tmp_per
-						fog_colour[layer2].value = tmp_colour
+						for layer_sub in sub_layers:
+							sub_layer_index_1 = layer1 + 21 + layer_sub * 21
+							sub_layer_index_2 = layer2 + 21 + layer_sub * 21
+
+							tmp_per = fog_per[sub_layer_index_1].value
+							tmp_colour = fog_colour[sub_layer_index_1].value
+							fog_per[sub_layer_index_1].value = fog_per[sub_layer_index_2].value
+							fog_colour[sub_layer_index_1].value = fog_colour[sub_layer_index_2].value
+							fog_per[sub_layer_index_2].value = tmp_per
+							fog_colour[sub_layer_index_2].value = tmp_colour
 
 		self.messageVar.set('Success!')
 
