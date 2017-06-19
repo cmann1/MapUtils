@@ -56,17 +56,22 @@ class ReplaceDustAction(Action):
 		list_var = tk.StringVar(value=self.sprites_list)
 
 		ttk.Label(top_frame, text="From").grid(column=0, row=0, sticky=tk.W)
-		self.from_box = tk.Listbox(top_frame, listvariable=list_var, width=26, height=10, selectmode='extended', exportselection=False)
+		self.from_box = tk.Listbox(top_frame, listvariable=list_var, width=26, height=10, selectmode='extended', exportselection=False, activestyle='dotbox')
 		self.from_box.grid(column=0, row=1, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(PADDING, 0), pady=PADDING)
 		self.from_box.config(font='Helvetica 11')
 
 		ttk.Label(top_frame, text="To").grid(column=1, row=0, sticky=tk.W)
-		self.to_box = tk.Listbox(top_frame, listvariable=list_var, width=26, height=10, exportselection=False)
+		self.to_box = tk.Listbox(top_frame, listvariable=list_var, width=26, height=10, exportselection=False, activestyle='dotbox')
 		self.to_box.grid(column=1, row=1, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(PADDING, 0), pady=PADDING)
 		self.to_box.config(font='Helvetica 11')
 
 		ttk.Button(top_frame, text='Replace', command=self.apply).grid(column=0, row=2, sticky=(tk.W), padx=PADDING, pady=PADDING)
 		ttk.Label(top_frame, textvariable=self.messageVar).grid(column=1, row=2, sticky=(tk.W))
+
+		# Colorize alternating lines of the listbox
+		for i in range(0, len(self.sprites_list), 2):
+			self.from_box.itemconfigure(i, background='#f0f0ff')
+			self.to_box.itemconfigure(i, background='#f0f0ff')
 
 		self.centreWindow(dlg)
 
