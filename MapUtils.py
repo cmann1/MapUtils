@@ -24,7 +24,7 @@ class MainApplication(tk.Frame):
 		
 		self.config = Config()
 		
-		self.currentMapPath = ''
+		self.current_map_path = ''
 		self.map = None
 		self.backup = None
 		self.map_name = ''
@@ -32,46 +32,54 @@ class MainApplication(tk.Frame):
 		PADDING = 4
 		HPADDING = PADDING / 2
 
-		root.title("Map Utils")
+		root.title('Map Utils')
 		root.iconbitmap(default='files/dustman.ico')
 		root.columnconfigure(0, weight=1)
 		root.rowconfigure(0, weight=1)
 		root.resizable(0,0)
-		root.protocol("WM_DELETE_WINDOW", self.onWindowClose)
+		root.protocol('WM_DELETE_WINDOW', self.onWindowClose)
 		
 		mainframe = ttk.Frame(root, padding=PADDING)
 		mainframe.grid(column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S))
 		mainframe.columnconfigure(0, weight=1)
 		mainframe.rowconfigure(2, weight=1)
 
-		self.MapNameVar = tk.StringVar()
-		self.MapNameVar.set("No map selected")
-		self.MapPathVar = tk.StringVar()
+		self.map_name_var = tk.StringVar()
+		self.map_name_var.set('No map selected')
+		self.map_filename_var = tk.StringVar()
+		self.map_path_var = tk.StringVar()
 
-		fileLabelFrame = ttk.Frame(mainframe, borderwidth=2, relief="groove")
-		fileLabelFrame.grid(column=0, row=0, rowspan=2, sticky=(tk.N,tk.S,tk.W,tk.E))
+		file_label_frame = ttk.Frame(mainframe, borderwidth=2, relief='groove')
+		file_label_frame.grid(column=0, row=0, rowspan=2, sticky=(tk.N,tk.S,tk.W,tk.E))
 
-		self.MapNameLabel = ttk.Label(fileLabelFrame, textvariable=self.MapNameVar, width=30, justify="left")
-		self.MapNameLabel.grid(column=0, row=0, sticky=(tk.N,tk.W,tk.E))
-		self.MapNameLabel.config(font="Helvetica 12 bold")
-		self.MapNameTooltip = CreateToolTip(self.MapNameLabel, "")
+		# self.MapNameLabel = ttk.Label(fileLabelFrame, textvariable=self.MapNameVar, width=30, justify='left')
+		self.map_name_label = ttk.Entry(file_label_frame, textvariable=self.map_name_var, justify='left')
+		self.map_name_label.grid(column=0, row=0, sticky=(tk.N, tk.W, tk.E), padx=PADDING, pady=PADDING)
+		self.map_name_label.config(font='Helvetica 12 bold')
+
+		self.map_filename_label = ttk.Label(file_label_frame, textvariable=self.map_filename_var, justify='left')
+		self.map_filename_label.grid(column=0, row=1, sticky=(tk.N, tk.W, tk.E))
+		self.map_filename_tooltip = CreateToolTip(self.map_filename_label, '')
+
+		self.map_path_label = ttk.Label(file_label_frame, textvariable=self.map_path_var, width=60, justify='left')
+		self.map_path_label.grid(column=0, row=2, sticky=(tk.N, tk.W, tk.E))
+		self.map_path_tooltip = CreateToolTip(self.map_path_label, '')
+
+		button_frame = ttk.Frame(mainframe)
+		button_frame.grid(column=1, row=0, rowspan=2, sticky=(tk.N,tk.S,tk.W,tk.E))
 		
-		self.MapPathLabel = ttk.Label(fileLabelFrame, textvariable=self.MapPathVar, width=30, justify="left")
-		self.MapPathLabel.grid(column=0, row=1, sticky=(tk.N,tk.W,tk.E))
-		self.MapPathTooltip = CreateToolTip(self.MapPathLabel, "")
-		
-		ttk.Button(mainframe, text="Open", command=self.open_map).grid(column=1, row=0, sticky=(tk.N), padx=(PADDING,0))
-		ttk.Button(mainframe, text="Save", command=self.save_map).grid(column=1, row=1, sticky=(tk.N), padx=(PADDING,0))
-		saveCopyBtn = ttk.Button(mainframe, text="Save Copy", command=lambda: self.save_map(True))
-		saveCopyBtn.grid(column=2, row=1, sticky=(tk.N, tk.W, tk.E), padx=(PADDING,0))
-		CreateToolTip(saveCopyBtn, 'Saves a copy with "_modified" appended to the map and file name')
+		ttk.Button(button_frame, text='Open', command=self.open_map).grid(column=0, row=0, sticky=(tk.N), padx=(PADDING, 0))
+		ttk.Button(button_frame, text='Save', command=self.save_map).grid(column=0, row=1, sticky=(tk.N), padx=(PADDING, 0))
+		save_copy_btn = ttk.Button(button_frame, text='Save Copy', command=lambda: self.save_map(True))
+		save_copy_btn.grid(column=0, row=2, sticky=(tk.N, tk.W, tk.E), padx=(PADDING,0))
+		CreateToolTip(save_copy_btn, 'Saves a copy with "_modified" appended to the map and file name')
 
 		# Disabled until I can figure out how to change a map's name directly without having to read/write the entire map
-		# save_and_backup_btn = ttk.Button(mainframe, text="Save+Backup", command=lambda: self.save_map(True, True))
+		# save_and_backup_btn = ttk.Button(mainframe, text='Save+Backup', command=lambda: self.save_map(True, True))
 		# save_and_backup_btn.grid(column=2, row=0, sticky=(tk.N, tk.W, tk.E), padx=(PADDING, 0))
 		# CreateToolTip(save_and_backup_btn, 'Makes a backup of the map file before saving')
 
-		self.actionFrame = ttk.Frame(mainframe, borderwidth=2, relief="groove", padding = PADDING)
+		self.actionFrame = ttk.Frame(mainframe, borderwidth=2, relief='groove', padding = PADDING)
 		self.actionFrame.grid(column=0, row=2, columnspan=3, sticky=(tk.N,tk.S,tk.W,tk.E), pady=(PADDING,0))
 
 		actions = [
@@ -128,40 +136,44 @@ class MainApplication(tk.Frame):
 	
 	def set_map(self, path=None):
 		if path is not None:
-			self.MapNameVar.set("Loading...")
-			self.MapPathVar.set("")
+			self.map_name_var.set('Loading...')
+			self.map_path_var.set('')
 			self.root.update_idletasks()
 
 			try:
-				with open(path, "rb") as f:
+				with open(path, 'rb') as f:
 					try:
 						self.map = dustmaker.read_map(f.read())
 						self.map_name = self.map.name()
 						# self.backup = copy.deepcopy(self.map)
 					except Exception:
 						self.set_map()
-						self.MapNameVar.set("Error loading map file")
+						self.map_name_var.set('Error loading map file')
 						return
 					#
 			except FileNotFoundError:
 				self.set_map()
-				self.MapNameVar.set("Error loading map file")
+				self.map_name_var.set('Error loading map file')
 				return
 		
-			name = '%s (%s)' % (os.path.basename(path), self.map_name)
+			filename = os.path.basename(path)
 			location = os.path.dirname(path)
-			self.MapNameVar.set(name)
-			self.MapPathVar.set("Location: %s" % location)
-			self.MapNameTooltip.text = name
-			self.MapPathTooltip.text = location
+			self.map_name_var.set(self.map_name)
+			self.map_name_label.state(['!readonly'])
+			self.map_filename_var.set('File: %s' % filename)
+			self.map_path_var.set('Location: %s' % location)
+			self.map_filename_tooltip.text = filename
+			self.map_path_tooltip.text = location
 		else:
 			self.map = None
 			self.map_name = ''
-			self.MapNameVar.set('No map selected')
-			self.MapPathVar.set('')
+			self.map_name_var.set('No map selected')
+			self.map_name_label.state(['readonly'])
+			self.map_filename_var.set('')
+			self.map_path_var.set('')
 		# END ifelse
 		
-		self.currentMapPath = path
+		self.current_map_path = path
 
 		Actions.Action.enable_frame(self.actionFrame, path is not None)
 		state = 'disable' if path is None else 'enable'
@@ -172,17 +184,18 @@ class MainApplication(tk.Frame):
 	def open_map(self):
 		filename = filedialog.askopenfilename()
 		
-		if filename != "":
+		if filename != '':
 			self.set_map(filename)
 		# END if
 	# END openMap
 	
 	def save_map(self, save_copy=False, save_backup=False):
-		if self.currentMapPath == '':
+		if self.current_map_path == '':
 			messagebox.showinfo(message='No map selected', icon='warning')
 			return
 
-		currentMapPath = self.currentMapPath
+		self.map_name = self.map_name_var.get()
+		currentMapPath = self.current_map_path
 
 		# if save_backup:
 		# 	save_copy = False
@@ -204,7 +217,7 @@ class MainApplication(tk.Frame):
 		#
 		# 	# copyfile(currentMapPath, backup_path)
 		# 	self.backup.name(self.map_name + '_bak_' + str(backup_index))
-		# 	with open(backup_path, "wb") as f:
+		# 	with open(backup_path, 'wb') as f:
 		# 		f.write(dustmaker.write_map(self.backup))
 
 		if not save_copy and not save_backup:
@@ -217,11 +230,11 @@ class MainApplication(tk.Frame):
 		try:
 			if save_copy:
 				self.map.name(self.map_name + '_modified')
-				currentMapPath = os.path.join(os.path.dirname(currentMapPath), os.path.basename(self.currentMapPath) + '_modified')
+				currentMapPath = os.path.join(os.path.dirname(currentMapPath), os.path.basename(self.current_map_path) + '_modified')
 			else:
 				self.map.name(self.map_name)
 
-			with open(currentMapPath, "wb") as f:
+			with open(currentMapPath, 'wb') as f:
 				f.write(dustmaker.write_map(self.map))
 			messagebox.showinfo(message='Map saved')
 			self.map.name(self.map_name)
@@ -256,7 +269,7 @@ class MainApplication(tk.Frame):
 	
 # END MainApplication
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 	root = tk.Tk()
 	MainApplication(root)
 	root.mainloop()
