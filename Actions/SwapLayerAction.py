@@ -18,6 +18,7 @@ class SwapLayerAction(Action):
 		self.vars['swapAllFogTriggers'] = (tk.BooleanVar(), True)
 		self.vars['copy'] = (tk.BooleanVar(), False)
 		self.vars['clear'] = (tk.BooleanVar(), False)
+		self.vars['ignoreDustBlocks'] = (tk.BooleanVar(), False)
 
 		self.messageVar = tk.StringVar()
 	# END __init__
@@ -30,7 +31,7 @@ class SwapLayerAction(Action):
 		PADDING = 4
 		HPADDING = PADDING / 2
 
-		dlg = self.createModalWindow("Swap Layers")
+		dlg = self.createModalWindow('Swap Layers')
 
 		# root.columnconfigure(0, weight=1)
 		# root.rowconfigure(0, weight=1)
@@ -43,8 +44,8 @@ class SwapLayerAction(Action):
 		buttonFrame = ttk.Frame(dlg, padding=PADDING)
 		buttonFrame.grid(column=0, row=3, sticky=(tk.N, tk.S, tk.W, tk.E))
 
-		ttk.Label(layerFrame, text="Layer 1").grid(column=0, row=0)
-		ttk.Label(layerFrame, text="Layer 2").grid(column=0, row=1)
+		ttk.Label(layerFrame, text='Layer 1').grid(column=0, row=0)
+		ttk.Label(layerFrame, text='Layer 2').grid(column=0, row=1)
 
 		layer1 = tk.Spinbox(layerFrame, from_=0, to=20, textvariable=self.vars['layer1'][0])
 		layer1.grid(column=1, row=0)
@@ -64,10 +65,14 @@ class SwapLayerAction(Action):
 		clear = ttk.Checkbutton(copyOptionsFrame, text='Clear', variable=self.vars['clear'][0], onvalue=True,
 						offvalue=False)
 		clear.grid(column=1, row=0, sticky=tk.W)
-		CreateToolTip(copy, "Instead of being swapped, the contents of layer 1 will be copied to layer 2")
-		CreateToolTip(clear, "Clears layer 2 before copying over the contents from layer 1.\nOnly applies of Copy is checked")
+		ignore_dust_blocks = ttk.Checkbutton(copyOptionsFrame, text='Ignore dust blocks', variable=self.vars['ignoreDustBlocks'][0], onvalue=True,
+						offvalue=False)
+		ignore_dust_blocks.grid(column=0, row=1, columnspan=2, sticky=tk.W)
+		CreateToolTip(copy, 'Instead of being swapped, the contents of layer 1 will be copied to layer 2')
+		CreateToolTip(clear, 'Clears layer 2 before copying over the contents from layer 1.\nOnly applies of Copy is checked')
+		CreateToolTip(ignore_dust_blocks, 'Won\'t copy dust blocks')
 
-		ttk.Button(buttonFrame, text="Apply", command=self.apply).grid(column=0, row=0, sticky=(tk.W))
+		ttk.Button(buttonFrame, text='Apply', command=self.apply).grid(column=0, row=0, sticky=(tk.W))
 		ttk.Label(buttonFrame, textvariable=self.messageVar).grid(column=1, row=0, sticky=(tk.W))
 
 		self.centreWindow(dlg)
@@ -87,13 +92,14 @@ class SwapLayerAction(Action):
 
 		layer1 = self.var('layer1')
 		layer2 = self.var('layer2')
-		swapProps = self.var('swapProps')
-		swapTiles = self.var('swapTiles')
-		swapAllFogTriggers = self.var('swapAllFogTriggers')
+		swap_props = self.var('swapProps')
+		swap_tiles = self.var('swapTiles')
+		swap_all_fog_triggers = self.var('swapAllFogTriggers')
 		copy = self.var('copy')
 		clear = self.var('clear')
+		ignore_dust_blocks = self.var('ignoreDustBlocks')
 
-		if swapProps:
+		if swap_props:
 			props_add = []
 			props_del = []
 			for map in [self.map, self.map.backdrop]:
@@ -117,7 +123,7 @@ class SwapLayerAction(Action):
 
 		map = self.map
 
-		if swapTiles:
+		if swap_tiles:
 			tiles_add = []
 			tiles_del = []
 			for id, tile in map.tiles.items():
@@ -125,7 +131,8 @@ class SwapLayerAction(Action):
 				new_tile = copy_func.copy(tile)
 				if copy:
 					if layer == layer1:
-						tiles_add.append((id, x, y, new_tile, layer2))
+						if not ignore_dust_blocks or not tile.is_dustblock():
+							tiles_add.append((id, x, y, new_tile, layer2))
 					if clear and layer == layer2:
 						tiles_del.append(id)
 				elif layer == layer1 or layer == layer2:
@@ -140,7 +147,7 @@ class SwapLayerAction(Action):
 					del map.tiles[(layer, x, y)]
 				map.add_tile(layer, x, y, tile)
 
-		if swapAllFogTriggers:
+		if swap_all_fog_triggers:
 			for (id, (x, y, entity)) in list(map.entities.items()):
 				if isinstance(entity, FogTrigger):
 					vars = entity.vars
