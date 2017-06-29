@@ -43,11 +43,11 @@ class TextTriggerAction(Action):
 		Action.init(self)
 	# END init
 	
-	def createGui(self):
+	def create_gui(self):
 		PADDING = 4
 		HPADDING = PADDING / 2
 
-		dlg = self.createModalWindow("Text Triggers")
+		dlg = self.create_modal_window('Text Triggers')
 
 		self.edit_index = -1
 		list_items = self.list_items = []
@@ -103,18 +103,18 @@ class TextTriggerAction(Action):
 		buttons_frame = ttk.Frame(top_frame, padding=PADDING)
 		buttons_frame.grid(column=0, row=2, columnspan=3, sticky=(tk.N, tk.S, tk.W, tk.E), padx=0, pady=0)
 
-		ttk.Button(buttons_frame, text="Import", command=self.import_text).grid(column=0, row=0, sticky=(tk.N), padx=(0, PADDING))
-		ttk.Button(buttons_frame, text="Export", command=self.export_text).grid(column=1, row=0, sticky=(tk.N), padx=(0, PADDING))
+		ttk.Button(buttons_frame, text='Import', command=self.import_text).grid(column=0, row=0, sticky=(tk.N), padx=(0, PADDING))
+		ttk.Button(buttons_frame, text='Export', command=self.export_text).grid(column=1, row=0, sticky=(tk.N), padx=(0, PADDING))
 
 		Action.enable_frame(self.font_frame, False)
 
-		self.centreWindow(dlg)
+		self.centre_window(dlg)
 	# END createGui
 
 	def run(self, map):
 		Action.run(self, map)
 
-		self.createGui()
+		self.create_gui()
 	# END run
 
 	def import_text(self):

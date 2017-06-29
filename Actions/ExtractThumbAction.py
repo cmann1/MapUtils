@@ -17,7 +17,7 @@ class ExtractThumbAction(Action):
 		filename = filedialog.asksaveasfilename(initialfile=self.map.name() + '.png')
 
 		if filename != '':
-			with open(filename, "wb") as f:
+			with open(filename, 'wb') as f:
 				f.write(self.map.sshot)
 	# END run
 

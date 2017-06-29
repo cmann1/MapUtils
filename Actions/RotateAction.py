@@ -11,7 +11,7 @@ class RotateAction(Action):
 
 		self.vars['amount'] = (tk.IntVar(), 90)
 
-		self.messageVar = tk.StringVar()
+		self.message_var = tk.StringVar()
 
 	# END __init__
 	
@@ -19,11 +19,11 @@ class RotateAction(Action):
 		Action.init(self)
 	# END init
 
-	def createGui(self):
+	def create_gui(self):
 		PADDING = 4
 		HPADDING = PADDING / 2
 
-		dlg = self.createModalWindow("Rotate")
+		dlg = self.create_modal_window('Rotate')
 
 		frame = ttk.Frame(dlg, padding=PADDING)
 		frame.grid(column=0, row=0, sticky=(tk.N, tk.S, tk.W, tk.E))
@@ -32,24 +32,24 @@ class RotateAction(Action):
 		tk.Spinbox(frame, from_=-270, to=270, increment=90, textvariable=self.vars['amount'][0]).grid(
 			column=1, row=0, padx=(PADDING, 0), pady=(2, 0))
 
-		ttk.Button(frame, text="Rotate", command=self.apply).grid(column=0, row=3, sticky=(tk.W))
-		ttk.Label(frame, textvariable=self.messageVar).grid(column=1, row=3, sticky=(tk.W))
+		ttk.Button(frame, text='Rotate', command=self.apply).grid(column=0, row=3, sticky=(tk.W))
+		ttk.Label(frame, textvariable=self.message_var).grid(column=1, row=3, sticky=(tk.W))
 
-		self.centreWindow(dlg)
+		self.centre_window(dlg)
 	# END createGui
 	
 	def run(self, map):
 		Action.run(self, map)
 
-		self.messageVar.set('')
-		self.createGui()
+		self.message_var.set('')
+		self.create_gui()
 
 	# END run
 
 	def apply(self):
 		amount = self.var('amount') / 90
 		self.map.rotate(round(amount))
-		self.messageVar.set('Success!')
+		self.message_var.set('Success!')
 	# END apply
 
 # END Action

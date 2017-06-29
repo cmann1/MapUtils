@@ -20,18 +20,18 @@ class SwapLayerAction(Action):
 		self.vars['clear'] = (tk.BooleanVar(), False)
 		self.vars['ignoreDustBlocks'] = (tk.BooleanVar(), False)
 
-		self.messageVar = tk.StringVar()
+		self.message_var = tk.StringVar()
 	# END __init__
 
 	def init(self):
 		Action.init(self)
 	# END init
 
-	def createGui(self):
+	def create_gui(self):
 		PADDING = 4
 		HPADDING = PADDING / 2
 
-		dlg = self.createModalWindow('Swap Layers')
+		dlg = self.create_modal_window('Swap Layers')
 
 		# root.columnconfigure(0, weight=1)
 		# root.rowconfigure(0, weight=1)
@@ -73,21 +73,21 @@ class SwapLayerAction(Action):
 		CreateToolTip(ignore_dust_blocks, 'Won\'t copy dust blocks')
 
 		ttk.Button(buttonFrame, text='Apply', command=self.apply).grid(column=0, row=0, sticky=(tk.W))
-		ttk.Label(buttonFrame, textvariable=self.messageVar).grid(column=1, row=0, sticky=(tk.W))
+		ttk.Label(buttonFrame, textvariable=self.message_var).grid(column=1, row=0, sticky=(tk.W))
 
-		self.centreWindow(dlg)
+		self.centre_window(dlg)
 	# END createGui
 
 	def run(self, map):
 		Action.run(self, map)
 
-		self.messageVar.set('')
-		self.createGui()
+		self.message_var.set('')
+		self.create_gui()
 
 	# END run
 
 	def apply(self):
-		self.messageVar.set('Working...')
+		self.message_var.set('Working...')
 		self.root.update_idletasks()
 
 		layer1 = self.var('layer1')
@@ -178,7 +178,7 @@ class SwapLayerAction(Action):
 							fog_per[sub_layer_index_2].value = tmp_per
 							fog_colour[sub_layer_index_2].value = tmp_colour
 
-		self.messageVar.set('Success!')
+		self.message_var.set('Success!')
 
 	# END apply
 

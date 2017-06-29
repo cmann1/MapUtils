@@ -12,7 +12,7 @@ class TranslateAction(Action):
 		self.vars['translateX'] = (tk.IntVar(), 0)
 		self.vars['translateY'] = (tk.IntVar(), 0)
 
-		self.messageVar = tk.StringVar()
+		self.message_var = tk.StringVar()
 
 	# END __init__
 	
@@ -20,14 +20,14 @@ class TranslateAction(Action):
 		Action.init(self)
 	# END init
 
-	def createGui(self):
+	def create_gui(self):
 		PADDING = 4
 		HPADDING = PADDING / 2
 
 		offset_min = -1000000000
 		offset_max =  1000000000
 
-		dlg = self.createModalWindow("Translate")
+		dlg = self.create_modal_window('Translate')
 
 		frame = ttk.Frame(dlg, padding=PADDING)
 		frame.grid(column=0, row=0, sticky=(tk.N, tk.S, tk.W, tk.E))
@@ -38,25 +38,25 @@ class TranslateAction(Action):
 		tk.Spinbox(frame, from_=offset_min, to=offset_max, textvariable=self.vars['translateY'][0]).grid(
 			column=2, row=0, padx=(PADDING, 0), pady=(2, 0))
 
-		ttk.Button(frame, text="Translate", command=self.apply).grid(column=0, row=3, sticky=(tk.W))
-		ttk.Label(frame, textvariable=self.messageVar).grid(column=1, row=3, sticky=(tk.W))
+		ttk.Button(frame, text='Translate', command=self.apply).grid(column=0, row=3, sticky=(tk.W))
+		ttk.Label(frame, textvariable=self.message_var).grid(column=1, row=3, sticky=(tk.W))
 
-		self.centreWindow(dlg)
+		self.centre_window(dlg)
 	# END createGui
 	
 	def run(self, map):
 		Action.run(self, map)
 
-		self.messageVar.set('')
-		self.createGui()
+		self.message_var.set('')
+		self.create_gui()
 
 	# END run
 
 	def apply(self):
-		translateX = self.var('translateX')
-		translateY = self.var('translateY')
-		self.map.translate(round(translateX), round(translateY))
-		self.messageVar.set('Success!')
+		translate_x = self.var('translateX')
+		translate_y = self.var('translateY')
+		self.map.translate(round(translate_x), round(translate_y))
+		self.message_var.set('Success!')
 	# END apply
 
 # END Action

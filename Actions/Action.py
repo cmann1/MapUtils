@@ -19,7 +19,7 @@ class Action(object):
 		self.needsInit = False
 	# END init
 	
-	def createGui(self):
+	def create_gui(self):
 		pass
 	# END createGui
 	
@@ -35,7 +35,7 @@ class Action(object):
 		pass
 	# END run
 
-	def createModalWindow(self, title: object) -> object:
+	def create_modal_window(self, title: object) -> object:
 		dlg = self.dlg = tk.Toplevel()
 		dlg.resizable(0, 0)
 		dlg.title(title)
@@ -47,7 +47,7 @@ class Action(object):
 		# Make sure dialog stays on top of its parent window (if needed)
 		dlg.transient(self.root)
 
-		dlg.protocol("WM_DELETE_WINDOW", self.onWindowClose)
+		dlg.protocol('WM_DELETE_WINDOW', self.on_window_close)
 
 		return dlg
 
@@ -59,17 +59,17 @@ class Action(object):
 
 	# END run
 
-	def updateConfigValues(self):
+	def update_config_values(self):
 		for name, value in self.vars.items():
 			var, default = value
 			self.config[name] = var.get()
 	# END updateConfigValues
 
-	def var(self, varname):
-		return self.vars[varname][0].get()
+	def var(self, var_name):
+		return self.vars[var_name][0].get()
 	# END 	var
 	
-	def centreWindow(self, window):
+	def centre_window(self, window):
 		window.update_idletasks()
 		w = window.winfo_reqwidth()
 		h = window.winfo_reqheight()
@@ -80,9 +80,9 @@ class Action(object):
 		window.geometry('+%d+%d' % (x, y))
 	# END centre
 
-	def onWindowClose(self):
+	def on_window_close(self):
 		try:
-			self.updateConfigValues()
+			self.update_config_values()
 			self.app.config.write()
 		except Exception as err:
 			print("{0}".format(err))

@@ -21,21 +21,21 @@ class MoveSublayerAction(Action):
 		self.vars['repeat'] = (tk.IntVar(), 1)
 		self.vars['copy'] = (tk.BooleanVar(), False)
 
-		self.messageVar = tk.StringVar()
+		self.message_var = tk.StringVar()
 	# END __init__
 
 	def init(self):
 		Action.init(self)
 	# END init
 
-	def createGui(self):
+	def create_gui(self):
 		PADDING = 4
 		HPADDING = PADDING / 2
 
 		offset_min = -1000000000
 		offset_max =  1000000000
 
-		dlg = self.createModalWindow("Move Props")
+		dlg = self.create_modal_window('Move Props')
 
 		layer_frame = ttk.Frame(dlg, padding=PADDING)
 		layer_frame.grid(column=0, row=0, sticky=(tk.N, tk.S, tk.W, tk.E))
@@ -44,47 +44,47 @@ class MoveSublayerAction(Action):
 		button_frame = ttk.Frame(dlg, padding=PADDING)
 		button_frame.grid(column=0, row=2, sticky=(tk.N, tk.S, tk.W, tk.E))
 
-		from_frame = ttk.Labelframe(layer_frame, text="From", padding=PADDING)
-		to_frame = ttk.Labelframe(layer_frame, text="To", padding=PADDING)
+		from_frame = ttk.Labelframe(layer_frame, text='From', padding=PADDING)
+		to_frame = ttk.Labelframe(layer_frame, text='To', padding=PADDING)
 		from_frame.grid(column=0, row=0, sticky=(tk.N, tk.S, tk.W, tk.E), padx=(0, PADDING))
 		to_frame.grid(column=1, row=0, sticky=(tk.N, tk.S, tk.W, tk.E))
 
-		ttk.Label(from_frame, text="Layer").grid(column=0, row=0, sticky=tk.W)
-		ttk.Label(to_frame, text="Layer").grid(column=0, row=0, sticky=tk.W)
-		ttk.Label(from_frame, text="Sublayer").grid(column=0, row=2, sticky=tk.W)
-		ttk.Label(to_frame, text="Sublayer").grid(column=0, row=2, sticky=tk.W)
+		ttk.Label(from_frame, text='Layer').grid(column=0, row=0, sticky=tk.W)
+		ttk.Label(to_frame, text='Layer').grid(column=0, row=0, sticky=tk.W)
+		ttk.Label(from_frame, text='Sublayer').grid(column=0, row=2, sticky=tk.W)
+		ttk.Label(to_frame, text='Sublayer').grid(column=0, row=2, sticky=tk.W)
 		tk.Spinbox(from_frame, from_=0, to=20, textvariable=self.vars['layer1'][0]).grid(column=0, row=1)
 		tk.Spinbox(to_frame, from_=0, to=20, textvariable=self.vars['layer2'][0]).grid(column=0, row=1)
 		tk.Spinbox(from_frame, from_=-1, to=24, textvariable=self.vars['sublayer1'][0]).grid(column=0, row=3)
 		tk.Spinbox(to_frame, from_=-1, to=24, textvariable=self.vars['sublayer2'][0]).grid(column=0, row=3)
 
-		ttk.Label(options_frame, text="Offset").grid(column=0, row=0, sticky=tk.W)
+		ttk.Label(options_frame, text='Offset').grid(column=0, row=0, sticky=tk.W)
 		tk.Spinbox(options_frame, from_=offset_min, to=offset_max, increment=0.1, textvariable=self.vars['offsetX'][0]).grid(column=1, row=0)
 		tk.Spinbox(options_frame, from_=offset_min, to=offset_max, increment=0.1, textvariable=self.vars['offsetY'][0]).grid(column=2, row=0, padx=(PADDING, 0))
 
-		ttk.Label(options_frame, text="Rotation").grid(column=0, row=1, sticky=tk.W, pady=PADDING)
+		ttk.Label(options_frame, text='Rotation').grid(column=0, row=1, sticky=tk.W, pady=PADDING)
 		tk.Spinbox(options_frame, from_=-360, to=360, textvariable=self.vars['rotation'][0]).grid(column=1, row=1)
 
-		ttk.Label(options_frame, text="Repeat").grid(column=0, row=2, sticky=tk.W, pady=PADDING)
+		ttk.Label(options_frame, text='Repeat').grid(column=0, row=2, sticky=tk.W, pady=PADDING)
 		tk.Spinbox(options_frame, from_=1, to=500, textvariable=self.vars['repeat'][0]).grid(column=1, row=2)
 		ttk.Checkbutton(options_frame, text='Copy', variable=self.vars['copy'][0], onvalue=True,
 		                       offvalue=False).grid(column=0, row=3, sticky=tk.W)
 
-		ttk.Button(button_frame, text="Apply", command=self.apply).grid(column=0, row=0, sticky=(tk.W))
-		ttk.Label(button_frame, textvariable=self.messageVar).grid(column=1, row=0, sticky=(tk.W))
+		ttk.Button(button_frame, text='Apply', command=self.apply).grid(column=0, row=0, sticky=(tk.W))
+		ttk.Label(button_frame, textvariable=self.message_var).grid(column=1, row=0, sticky=(tk.W))
 
-		self.centreWindow(dlg)
+		self.centre_window(dlg)
 	# END createGui
 
 	def run(self, map):
 		Action.run(self, map)
 
-		self.messageVar.set('')
-		self.createGui()
+		self.message_var.set('')
+		self.create_gui()
 	# END run
 
 	def apply(self):
-		self.messageVar.set('Working...')
+		self.message_var.set('Working...')
 		self.root.update_idletasks()
 
 		layer1 = self.var('layer1')
@@ -132,7 +132,7 @@ class MoveSublayerAction(Action):
 		for (map, id) in props_del:
 			del map.props[id]
 
-		self.messageVar.set('Success!')
+		self.message_var.set('Success!')
 	# END apply
 
 # END MoveSublayerAction

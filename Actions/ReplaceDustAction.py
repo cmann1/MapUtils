@@ -53,18 +53,18 @@ class ReplaceDustAction(Action):
 
 		self.icons = {}
 
-		self.messageVar = tk.StringVar()
+		self.message_var = tk.StringVar()
 	# END __init__
 
 	def init(self):
 		Action.init(self)
 	# END init
 
-	def createGui(self):
+	def create_gui(self):
 		PADDING = 4
 		HPADDING = PADDING / 2
 
-		dlg = self.createModalWindow('Replace Dust')
+		dlg = self.create_modal_window('Replace Dust')
 
 		top_frame = ttk.Frame(dlg)
 		top_frame.grid(column=0, row=0, sticky=(tk.N, tk.S, tk.W, tk.E), padx=0, pady=0)
@@ -77,7 +77,7 @@ class ReplaceDustAction(Action):
 		ttk.Label(top_frame, text='To').grid(column=1, row=0, sticky=tk.W)
 
 		ttk.Button(button_frame, text='Replace', command=self.apply).grid(column=0, row=3, sticky=(tk.W), padx=PADDING, pady=PADDING)
-		ttk.Label(button_frame, textvariable=self.messageVar).grid(column=1, row=3, sticky=(tk.W))
+		ttk.Label(button_frame, textvariable=self.message_var).grid(column=1, row=3, sticky=(tk.W))
 
 		style = ttk.Style(dlg)
 		style.configure('Treeview', rowheight=30)
@@ -85,7 +85,7 @@ class ReplaceDustAction(Action):
 		self.to_tree = self.create_tree(top_frame, column=1, row=1, padding=PADDING, selectmode='browse', include_none=True)
 		self.to_tree.configure(selectmode='browse')
 
-		self.centreWindow(dlg)
+		self.centre_window(dlg)
 
 		pass  # END func
 
@@ -179,8 +179,8 @@ class ReplaceDustAction(Action):
 	def run(self, map):
 		Action.run(self, map)
 
-		self.messageVar.set('')
-		self.createGui()
+		self.message_var.set('')
+		self.create_gui()
 
 	# END run
 
@@ -195,7 +195,7 @@ class ReplaceDustAction(Action):
 			messagebox.showinfo(message='Please select a new dust/spike', icon='warning')
 			return
 		
-		self.messageVar.set('Working...')
+		self.message_var.set('Working...')
 		self.root.update_idletasks()
 
 		from_list = {}
@@ -221,6 +221,6 @@ class ReplaceDustAction(Action):
 					tile.edge_filth_sprite(side, to_sprite, to_spikes)
 		# 	pass
 
-		self.messageVar.set('Success!')
+		self.message_var.set('Success!')
 
 		pass # END func

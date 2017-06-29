@@ -48,14 +48,14 @@ class RenderAction(Action):
 		Action.init(self)
 	# END init
 
-	def createGui(self):
+	def create_gui(self):
 		PADDING = 4
 		HPADDING = PADDING / 2
 
 		offset_min = -1000
 		offset_max = 1000
 
-		dlg = self.createModalWindow("Swap Layers")
+		dlg = self.create_modal_window("Swap Layers")
 		dlg.resizable(0, 0)
 
 		optionsFrame = ttk.Frame(dlg, padding=PADDING)
@@ -89,14 +89,14 @@ class RenderAction(Action):
 		ttk.Button(buttonFrame, text="Render", command=self.apply).grid(column=0, row=0, sticky=(tk.W))
 		ttk.Label(buttonFrame, textvariable=self.messageVar).grid(column=1, row=0, sticky=(tk.W))
 
-		self.centreWindow(dlg)
+		self.centre_window(dlg)
 	# END 	createGui
 
 	def run(self, map):
 		Action.run(self, map)
 
 		self.messageVar.set('')
-		self.createGui()
+		self.create_gui()
 	# END run
 
 	def apply(self):
