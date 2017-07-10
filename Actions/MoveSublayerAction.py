@@ -68,14 +68,14 @@ class MoveSublayerAction(Action):
 						offvalue=False).grid(column=0, row=0, sticky=tk.W)
 
 		ttk.Label(copy_frame, text='Offset').grid(column=0, row=1, sticky=tk.W)
-		tk.Spinbox(copy_frame, from_=offset_min, to=offset_max, increment=0.1, textvariable=self.vars['offsetX'][0]).grid(column=1, row=0)
-		tk.Spinbox(copy_frame, from_=offset_min, to=offset_max, increment=0.1, textvariable=self.vars['offsetY'][0]).grid(column=2, row=0, padx=(PADDING, 0))
+		tk.Spinbox(copy_frame, from_=offset_min, to=offset_max, increment=0.1, textvariable=self.vars['offsetX'][0]).grid(column=1, row=1)
+		tk.Spinbox(copy_frame, from_=offset_min, to=offset_max, increment=0.1, textvariable=self.vars['offsetY'][0]).grid(column=2, row=1, padx=(PADDING, 0))
 
 		ttk.Label(copy_frame, text='Rotation').grid(column=0, row=2, sticky=tk.W, pady=PADDING)
-		tk.Spinbox(copy_frame, from_=-360, to=360, textvariable=self.vars['rotation'][0]).grid(column=1, row=1)
+		tk.Spinbox(copy_frame, from_=-360, to=360, textvariable=self.vars['rotation'][0]).grid(column=1, row=2)
 
 		ttk.Label(copy_frame, text='Repeat').grid(column=0, row=3, sticky=tk.W, pady=PADDING)
-		tk.Spinbox(copy_frame, from_=1, to=500, textvariable=self.vars['repeat'][0]).grid(column=1, row=2)
+		tk.Spinbox(copy_frame, from_=1, to=500, textvariable=self.vars['repeat'][0]).grid(column=1, row=3)
 
 		selective_checkbox = ttk.Checkbutton(options_frame, text='Within player 3 and 4 bounds',
 			variable=self.vars['withinPlayerBounds'][0], onvalue=True,
