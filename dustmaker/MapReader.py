@@ -88,14 +88,16 @@ def read_var_map(reader):
     result[var[0]] = var[1]
 
 def read_segment(reader, map, xoffset, yoffset, config):
+  start_index = reader.get_index()
+
   segment_size = reader.read(32)
   version = reader.read(16)
   xoffset += reader.read(8) * 16
   yoffset += reader.read(8) * 16
-  unk1 = reader.read(8)
+  segmentWidth = reader.read(8)
 
   if version > 4:
-    unk2 = reader.read(32)
+    level_uid = reader.read(32)
     dust_filth = reader.read(16)
     enemy_filth = reader.read(16)
   if version > 5:
@@ -139,7 +141,7 @@ def read_segment(reader, map, xoffset, yoffset, config):
       layer_sub = reader.read(8)
 
       scale = 1
-      if config['scaled_props']:
+      if version > 6 or config['scaled_props']:
         x_sgn = reader.read(1)
         x_int = reader.read(27)
         x_scale = (reader.read(4) & 0x7) ^ 0x4
@@ -169,6 +171,13 @@ def read_segment(reader, map, xoffset, yoffset, config):
                    prop_set, prop_group, prop_index, palette), id)
 
   if flags & 4:
+    extra_names_reader = BitReader(b"")
+    if version > 7:
+      extra_names_reader = BitReader(reader.data)
+      extra_names_reader.set_index(start_index + (segment_size - 4) * 8)
+      extra_names_index = extra_names_reader.read(32)
+      extra_names_reader.skip(-extra_names_index - 32)
+
     entities = reader.read(16)
     for i in range(entities):
       id = reader.read(32, True)
@@ -176,24 +185,30 @@ def read_segment(reader, map, xoffset, yoffset, config):
         continue
 
       type = read_6bit_str(reader)
+      if type == "entity":
+        type = read_6bit_str(extra_names_reader)
+
       xpos = read_float(reader, 32, 8)
       ypos = read_float(reader, 32, 8)
       rotation = reader.read(16)
       layer = reader.read(8)
-      unk2 = reader.read(1)
-      unk3 = reader.read(1)
-      unk4 = reader.read(1)
+      faceX = reader.read(1)
+      faceY = reader.read(1)
+      visible = reader.read(1)
       vars = read_var_map(reader)
 
       map.add_entity(xpos / 48, ypos / 48, Entity._from_raw(
-                     type, vars, rotation, layer, unk2, unk3, unk4), id)
+                     type, vars, rotation, layer,
+                     faceX == 0, faceY == 0, visible == 1), id)
+
+  reader.set_index(start_index + segment_size * 8)
 
 def read_region(reader, map, config):
   region_len = reader.read(32)
   uncompressed_len = reader.read(32)
   offx = reader.read(16, True)
   offy = reader.read(16, True)
-  unk4 = reader.read(16)
+  version = reader.read(16)
   segments = reader.read(16)
   has_backdrop = reader.read(8) != 0
 
@@ -211,16 +226,16 @@ def read_metadata(reader):
 
   version = reader.read(16)
   region_offset = reader.read(32)
-  unk1 = reader.read(32)
-  unk2 = reader.read(32)
-  unk3 = reader.read(32)
-  unk4 = reader.read(32)
+  entityUid = reader.read(32)
+  propUid = reader.read(32)
+  deprecatedSaveUid = reader.read(32)
+  regionUidDeprecated = reader.read(32)
   return {
     'version': version,
-    'unk1': unk1,
-    'unk2': unk2,
-    'unk3': unk3,
-    'unk4': unk4,
+    'entityUid': entityUid,
+    'propUid': propUid,
+    'deprecatedSaveUid': deprecatedSaveUid,
+    'regionUidDeprecated': regionUidDeprecated,
   }
 
 def read_map(data):
@@ -251,7 +266,7 @@ def read_map(data):
     map.vars = read_var_map(reader)
     map.sshot = sshot_data
 
-    config = {"scaled_props": map.can_use_scaled_props()}
+    config = {"scaled_props": map.level_type() == LevelType.DUSTMOD}
 
     reader.align(8)
     reader.skip(num_regions * 32)
@@ -262,3 +277,26 @@ def read_map(data):
     raise e
   except Exception as e:
     raise MapParseException(e)
+
+def read_var_file(header, data):
+  try:
+    reader = BitReader(data)
+    read_expect(reader, header)
+    version = reader.read(16)
+    statSize = reader.read(32)
+    return read_var_map(reader)
+  except MapParseException as e:
+    raise e
+  except Exception as e:
+    raise MapParseException(e)
+
+def read_stat_file(data):
+  return read_var_file(b"DF_STA", data)
+
+def read_config_file(data):
+  return read_var_file(b"DF_CFG", data)
+
+def read_fog_file(data):
+  return read_var_file(b"DF_FOG", data)
+
+# TODO, support DF_EMT, DF_PRT, DF_WND
