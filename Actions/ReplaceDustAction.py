@@ -1,6 +1,7 @@
 from tkinter import ttk, messagebox
 import dustmaker
 
+from Settings import *
 from CreateToolTip import *
 from .Action import Action
 
@@ -95,8 +96,8 @@ class ReplaceDustAction(Action):
 		if icon_name in self.icons:
 			image = self.icons[icon_name]
 		else:
-			image = self.icons[icon_name] = tk.PhotoImage(file='files/' + icon_name)
-
+			image = self.icons[icon_name] = tk.PhotoImage(file=FILES_ROOT + icon_name)
+		
 		tree.insert(parent_node, 'end', text=dust_type, open=True, image=image)
 
 		pass
