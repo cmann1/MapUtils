@@ -19,6 +19,8 @@ class SwapLayerAction(Action):
 		self.vars['copy'] = (tk.BooleanVar(), False)
 		self.vars['clear'] = (tk.BooleanVar(), False)
 		self.vars['ignoreDustBlocks'] = (tk.BooleanVar(), False)
+		self.vars['offsetX'] = (tk.DoubleVar(), 0)
+		self.vars['offsetY'] = (tk.DoubleVar(), 0)
 
 		self.message_var = tk.StringVar()
 	# END __init__
@@ -41,8 +43,10 @@ class SwapLayerAction(Action):
 		optionsFrame.grid(column=0, row=1, sticky=(tk.N, tk.S, tk.W, tk.E))
 		copyOptionsFrame = ttk.Frame(dlg, padding=PADDING)
 		copyOptionsFrame.grid(column=0, row=2, sticky=(tk.N, tk.S, tk.W, tk.E))
+		offsetFrame = ttk.Labelframe(dlg, text='Offset', padding=PADDING)
+		offsetFrame.grid(column=0, row=3, sticky=(tk.N, tk.S, tk.W, tk.E))
 		buttonFrame = ttk.Frame(dlg, padding=PADDING)
-		buttonFrame.grid(column=0, row=3, sticky=(tk.N, tk.S, tk.W, tk.E))
+		buttonFrame.grid(column=0, row=4, sticky=(tk.N, tk.S, tk.W, tk.E))
 
 		ttk.Label(layerFrame, text='Layer 1').grid(column=0, row=0)
 		ttk.Label(layerFrame, text='Layer 2').grid(column=0, row=1)
@@ -72,6 +76,11 @@ class SwapLayerAction(Action):
 		CreateToolTip(clear, 'Clears layer 2 before copying over the contents from layer 1.\nOnly applies of Copy is checked')
 		CreateToolTip(ignore_dust_blocks, 'Won\'t copy dust blocks')
 
+		offset_min = -1000000000
+		offset_max =  1000000000
+		tk.Spinbox(offsetFrame, from_=offset_min, to=offset_max, increment=1, textvariable=self.vars['offsetX'][0]).grid(column=1, row=1)
+		tk.Spinbox(offsetFrame, from_=offset_min, to=offset_max, increment=1, textvariable=self.vars['offsetY'][0]).grid(column=2, row=1, padx=(PADDING, 0))
+
 		ttk.Button(buttonFrame, text='Apply', command=self.apply).grid(column=0, row=0, sticky=(tk.W))
 		ttk.Label(buttonFrame, textvariable=self.message_var).grid(column=1, row=0, sticky=(tk.W))
 
@@ -98,6 +107,8 @@ class SwapLayerAction(Action):
 		copy = self.var('copy')
 		clear = self.var('clear')
 		ignore_dust_blocks = self.var('ignoreDustBlocks')
+		offset_x = self.var('offsetX')
+		offset_y = self.var('offsetY')
 
 		if swap_props:
 			props_add = []
@@ -119,7 +130,7 @@ class SwapLayerAction(Action):
 				del map.props[id]
 
 			for (map, id, x, y, prop, layer) in props_add:
-				map.add_prop(layer, x, y, prop)
+				map.add_prop(layer, x + offset_x, y + offset_y, prop)
 
 		map = self.map
 
@@ -143,6 +154,8 @@ class SwapLayerAction(Action):
 				del map.tiles[id]
 
 			for (id, x, y, tile, layer) in tiles_add:
+				x += int(offset_x)
+				y += int(offset_y)
 				if (layer, x, y) in map.tiles:
 					del map.tiles[(layer, x, y)]
 				map.add_tile(layer, x, y, tile)

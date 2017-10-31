@@ -264,6 +264,8 @@ def read_map(data):
 
     map = Map()
     map.vars = read_var_map(reader)
+    # map.vars["scriptNames"] = Var(VarType.ARRAY, (VarType.STRING, []))
+    # map.vars["scripts"] = Var(VarType.ARRAY, (VarType.STRING, []))
     map.sshot = sshot_data
 
     config = {"scaled_props": map.level_type() == LevelType.DUSTMOD}
