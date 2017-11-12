@@ -86,6 +86,7 @@ class MainApplication(tk.Frame):
 			('Merge', Actions.MergeAction(self)),
 			('Flip X', Actions.FlipXAction(self), True),
 			('Flip Y', Actions.FlipYAction(self), True),
+			('Extract Thumb', Actions.ExtractThumbAction(self)),
 			('-', None),
 			('Translate', Actions.TranslateAction(self)),
 			('Rotate', Actions.RotateAction(self)),
@@ -94,10 +95,10 @@ class MainApplication(tk.Frame):
 			('Swap Layers', Actions.SwapLayerAction(self)),
 			('Clear Layer', Actions.ClearLayerAction(self)),
 			('Replace Dust', Actions.ReplaceDustAction(self)),
+			('Tile Borders', Actions.TileBorders(self)),
+			('-', None),
 			('Move Props', Actions.MoveSublayerAction(self)),
 			('Text Triggers', Actions.TextTriggerAction(self)),
-			('-', None),
-			('Extract Thumb', Actions.ExtractThumbAction(self)),
 			# ('Render', Actions.RenderAction(self))
 		]
 

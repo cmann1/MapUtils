@@ -10,5 +10,6 @@ from .ClearLayerAction import ClearLayerAction
 from .ReplaceDustAction import ReplaceDustAction
 from .MoveSublayerAction import MoveSublayerAction
 from .TextTriggerAction import TextTriggerAction
+from .TileBorders import TileBorders
 from .ExtractThumbAction import ExtractThumbAction
 # from .RenderAction import RenderAction

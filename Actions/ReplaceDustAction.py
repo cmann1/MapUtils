@@ -97,7 +97,7 @@ class ReplaceDustAction(Action):
 			image = self.icons[icon_name]
 		else:
 			image = self.icons[icon_name] = tk.PhotoImage(file=FILES_ROOT + icon_name)
-		
+
 		tree.insert(parent_node, 'end', text=dust_type, open=True, image=image)
 
 		pass
