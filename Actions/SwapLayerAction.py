@@ -23,12 +23,15 @@ class SwapLayerAction(Action):
 		self.vars['ignoreDustBlocks'] = (tk.BooleanVar(), False)
 		self.vars['offsetX'] = (tk.DoubleVar(), 0)
 		self.vars['offsetY'] = (tk.DoubleVar(), 0)
+		self.vars['withinPlayerBounds'] = (tk.BooleanVar(), False)
 
 		self.message_var = tk.StringVar()
+
 	# END __init__
 
 	def init(self):
 		Action.init(self)
+
 	# END init
 
 	def create_gui(self):
@@ -59,31 +62,30 @@ class SwapLayerAction(Action):
 		layer2.grid(column=1, row=1)
 
 		ttk.Checkbutton(optionsFrame, text='Props', variable=self.vars['swapProps'][0], onvalue=True,
-						offvalue=False).grid(column=0, row=0, sticky=tk.W)
+		                offvalue=False).grid(column=0, row=0, sticky=tk.W)
 		ttk.Checkbutton(optionsFrame, text='Tiles', variable=self.vars['swapTiles'][0], onvalue=True,
-						offvalue=False).grid(column=0, row=1, sticky=tk.W)
+		                offvalue=False).grid(column=0, row=1, sticky=tk.W)
 		ttk.Checkbutton(optionsFrame, text='All fog triggers', variable=self.vars['swapAllFogTriggers'][0],
-						onvalue=True, offvalue=False).grid(column=0, row=2, sticky=tk.W)
+		                onvalue=True, offvalue=False).grid(column=0, row=2, sticky=tk.W)
 
-		copy = ttk.Checkbutton(copyOptionsFrame, text='Copy', variable=self.vars['copy'][0], onvalue=True,
-						offvalue=False)
+		copy = ttk.Checkbutton(copyOptionsFrame, text='Copy', variable=self.vars['copy'][0], onvalue=True, offvalue=False)
 		copy.grid(column=0, row=0, sticky=tk.W)
-		clear = ttk.Checkbutton(copyOptionsFrame, text='Clear', variable=self.vars['clear'][0], onvalue=True,
-						offvalue=False)
+		clear = ttk.Checkbutton(copyOptionsFrame, text='Clear', variable=self.vars['clear'][0], onvalue=True, offvalue=False)
 		clear.grid(column=1, row=0, sticky=tk.W)
-		only_solid = ttk.Checkbutton(copyOptionsFrame, text='Only Solid', variable=self.vars['only_solid'][0], onvalue=True,
-						offvalue=False)
+		only_solid = ttk.Checkbutton(copyOptionsFrame, text='Only Solid', variable=self.vars['only_solid'][0], onvalue=True, offvalue=False)
 		only_solid.grid(column=2, row=0, sticky=tk.W)
-		ignore_dust_blocks = ttk.Checkbutton(copyOptionsFrame, text='Ignore dust blocks', variable=self.vars['ignoreDustBlocks'][0], onvalue=True,
-						offvalue=False)
+		ignore_dust_blocks = ttk.Checkbutton(copyOptionsFrame, text='Ignore dust blocks', variable=self.vars['ignoreDustBlocks'][0], onvalue=True, offvalue=False)
 		ignore_dust_blocks.grid(column=0, row=1, columnspan=2, sticky=tk.W)
+		ttk.Checkbutton(copyOptionsFrame, text='Within player 3 and 4 bounds',
+		                variable=self.vars['withinPlayerBounds'][0], onvalue=True,
+		                offvalue=False).grid(column=0, row=2, columnspan=3, sticky=tk.W)
 		CreateToolTip(copy, 'Instead of being swapped, the contents of layer 1 will be copied to layer 2')
 		CreateToolTip(clear, 'Clears layer 2 before copying over the contents from layer 1.\nOnly applies of Copy is checked')
 		CreateToolTip(only_solid, 'Only copies tiles that have at least one solid edge')
 		CreateToolTip(ignore_dust_blocks, 'Won\'t copy dust blocks')
 
 		offset_min = -1000000000
-		offset_max =  1000000000
+		offset_max = 1000000000
 		tk.Spinbox(offsetFrame, from_=offset_min, to=offset_max, increment=1, textvariable=self.vars['offsetX'][0]).grid(column=1, row=1)
 		tk.Spinbox(offsetFrame, from_=offset_min, to=offset_max, increment=1, textvariable=self.vars['offsetY'][0]).grid(column=2, row=1, padx=(PADDING, 0))
 
@@ -91,6 +93,7 @@ class SwapLayerAction(Action):
 		ttk.Label(buttonFrame, textvariable=self.message_var).grid(column=1, row=0, sticky=(tk.W))
 
 		self.centre_window(dlg)
+
 	# END createGui
 
 	def run(self, map):
@@ -116,6 +119,14 @@ class SwapLayerAction(Action):
 		ignore_dust_blocks = self.var('ignoreDustBlocks')
 		offset_x = self.var('offsetX')
 		offset_y = self.var('offsetY')
+		within_player_bounds = self.var('withinPlayerBounds')
+
+		bounds1 = self.map.start_position(None, 3)
+		bounds2 = self.map.start_position(None, 4)
+		min_x = min(bounds1[0], bounds2[0])
+		min_y = min(bounds1[1], bounds2[1])
+		max_x = max(bounds1[0], bounds2[0])
+		max_y = max(bounds1[1], bounds2[1])
 
 		if swap_props:
 			props_add = []
@@ -123,6 +134,11 @@ class SwapLayerAction(Action):
 			for map in [self.map, self.map.backdrop]:
 				for id, value in map.props.items():
 					layer, x, y, prop = value
+
+					if within_player_bounds:
+						if x < min_x or x > max_x or y < min_y or y > max_y:
+							continue
+
 					new_prop = copy_func.copy(prop)
 					if copy:
 						if layer == layer1:
@@ -146,6 +162,11 @@ class SwapLayerAction(Action):
 			tiles_del = []
 			for id, tile in map.tiles.items():
 				layer, x, y = id
+
+				if within_player_bounds:
+					if x < min_x or x > max_x or y < min_y or y > max_y:
+						continue
+
 				new_tile = copy_func.copy(tile)
 				if only_solid:
 					has_edge = False
