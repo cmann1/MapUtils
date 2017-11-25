@@ -2,6 +2,7 @@ from tkinter import ttk
 import copy as copy_func
 
 from dustmaker.Entity import Trigger, FogTrigger, Apple
+from dustmaker.Tile import TileSide
 from CreateToolTip import *
 
 from .Action import Action
@@ -18,6 +19,7 @@ class SwapLayerAction(Action):
 		self.vars['swapAllFogTriggers'] = (tk.BooleanVar(), True)
 		self.vars['copy'] = (tk.BooleanVar(), False)
 		self.vars['clear'] = (tk.BooleanVar(), False)
+		self.vars['only_solid'] = (tk.BooleanVar(), False)
 		self.vars['ignoreDustBlocks'] = (tk.BooleanVar(), False)
 		self.vars['offsetX'] = (tk.DoubleVar(), 0)
 		self.vars['offsetY'] = (tk.DoubleVar(), 0)
@@ -69,11 +71,15 @@ class SwapLayerAction(Action):
 		clear = ttk.Checkbutton(copyOptionsFrame, text='Clear', variable=self.vars['clear'][0], onvalue=True,
 						offvalue=False)
 		clear.grid(column=1, row=0, sticky=tk.W)
+		only_solid = ttk.Checkbutton(copyOptionsFrame, text='Only Solid', variable=self.vars['only_solid'][0], onvalue=True,
+						offvalue=False)
+		only_solid.grid(column=2, row=0, sticky=tk.W)
 		ignore_dust_blocks = ttk.Checkbutton(copyOptionsFrame, text='Ignore dust blocks', variable=self.vars['ignoreDustBlocks'][0], onvalue=True,
 						offvalue=False)
 		ignore_dust_blocks.grid(column=0, row=1, columnspan=2, sticky=tk.W)
 		CreateToolTip(copy, 'Instead of being swapped, the contents of layer 1 will be copied to layer 2')
 		CreateToolTip(clear, 'Clears layer 2 before copying over the contents from layer 1.\nOnly applies of Copy is checked')
+		CreateToolTip(only_solid, 'Only copies tiles that have at least one solid edge')
 		CreateToolTip(ignore_dust_blocks, 'Won\'t copy dust blocks')
 
 		offset_min = -1000000000
@@ -106,6 +112,7 @@ class SwapLayerAction(Action):
 		swap_all_fog_triggers = self.var('swapAllFogTriggers')
 		copy = self.var('copy')
 		clear = self.var('clear')
+		only_solid = self.var('only_solid')
 		ignore_dust_blocks = self.var('ignoreDustBlocks')
 		offset_x = self.var('offsetX')
 		offset_y = self.var('offsetY')
@@ -140,6 +147,14 @@ class SwapLayerAction(Action):
 			for id, tile in map.tiles.items():
 				layer, x, y = id
 				new_tile = copy_func.copy(tile)
+				if only_solid:
+					has_edge = False
+					for side in TileSide:
+						if tile.edge_bits(side) != 0:
+							has_edge = True
+							break
+					if not has_edge:
+						continue
 				if copy:
 					if layer == layer1:
 						if not ignore_dust_blocks or not tile.is_dustblock():

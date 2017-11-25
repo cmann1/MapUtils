@@ -1,6 +1,5 @@
 from tkinter import ttk
 
-import dustmaker
 from CreateToolTip import *
 from dustmaker.Tile import TileSide
 
