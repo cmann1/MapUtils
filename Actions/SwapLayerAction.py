@@ -199,6 +199,10 @@ class SwapLayerAction(Action):
 		if swap_all_fog_triggers:
 			for (id, (x, y, entity)) in list(map.entities.items()):
 				if isinstance(entity, FogTrigger):
+					if within_player_bounds:
+						if x < min_x or x > max_x or y < min_y or y > max_y:
+							continue
+
 					vars = entity.vars
 					fog_per = vars['fog_per'].value[1]
 					fog_colour = vars['fog_colour'].value[1]
