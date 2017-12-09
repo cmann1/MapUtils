@@ -44,6 +44,8 @@ class Entity:
     if name in self.vars:
       result = self.vars[name].value
     if not val is None:
+      if vtype == VarType.INT or vtype == VarType.UINT:
+        val = round(val)
       self.vars[name] = Var(vtype, val)
     return result
 
@@ -78,9 +80,7 @@ class Entity:
   def access_tile_var(self, vtype, name, val = None, default = None):
     if not val is None:
       val *= 48
-      if vtype == VarType.INT or vtype == VarType.UINT:
-        val = round(val)
-    return self.access_var(vtype, name, val, default) * 48
+    return self.access_var(vtype, name, val, default) / 48.0
 
   def access_array(self, atype, name):
     if not name in self.vars:
@@ -264,10 +264,10 @@ class DeathZone(Entity):
   TYPE_IDENTIFIER = "kill_box"
 
   def width(self, val = None):
-    return self.access_tile_var('width', val)
+    return self.access_tile_var(VarType.INT, 'width', val, 0)
 
   def height(self, val = None):
-    return self.access_tile_var('height', val)
+    return self.access_tile_var(VarType.INT, 'height', val, 0)
 
   def transform(self, mat):
     w = self.width()
@@ -300,9 +300,10 @@ class AIController(Entity):
     nods = self.nodes()
     for i in range(nods.count()):
       pos = nods.get(i)
+      pos = (pos[0] / 48.0, pos[1] / 48.0)
       nods.set(i,
-          (mat[0][2] + pos[0] * mat[0][0] + pos[1] * mat[0][1],
-           mat[1][2] + pos[0] * mat[1][0] + pos[1] * mat[1][1]))
+          ((mat[0][2] + pos[0] * mat[0][0] + pos[1] * mat[0][1]) * 48,
+           (mat[1][2] + pos[0] * mat[1][0] + pos[1] * mat[1][1]) * 48))
     super(AIController, self).transform(mat)
 
 known_types.append(AIController)
