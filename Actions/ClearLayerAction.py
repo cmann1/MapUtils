@@ -17,6 +17,7 @@ class ClearLayerAction(Action):
 		self.vars['clearTiles'] = (tk.BooleanVar(), True)
 		self.vars['clearEmitters'] = (tk.BooleanVar(), True)
 		self.vars['withinPlayerBounds'] = (tk.BooleanVar(), False)
+		self.vars['invertBounds'] = (tk.BooleanVar(), False)
 
 		self.message_var = tk.StringVar()
 
@@ -56,6 +57,9 @@ class ClearLayerAction(Action):
 		ttk.Checkbutton(options_frame, text='Within player 3 and 4 bounds',
 		                variable=self.vars['withinPlayerBounds'][0], onvalue=True,
 		                offvalue=False).grid(column=0, row=5, sticky=tk.W)
+		ttk.Checkbutton(options_frame, text='Invert Bounds',
+		                variable=self.vars['invertBounds'][0], onvalue=True,
+		                offvalue=False).grid(column=0, row=6, sticky=tk.W)
 
 		button = ttk.Button(button_frame, text='Clear')
 		button.grid(column=0, row=0, sticky=(tk.W, tk.E))
@@ -120,6 +124,7 @@ class ClearLayerAction(Action):
 		# return
 
 		within_player_bounds = self.var('withinPlayerBounds')
+		invert_bounds = self.var('invertBounds')
 		bounds1 = self.map.start_position(None, 3)
 		bounds2 = self.map.start_position(None, 4)
 		min_x = min(bounds1[0], bounds2[0])
@@ -142,8 +147,10 @@ class ClearLayerAction(Action):
 
 			if clear_emitters or clear_all:
 				for (id, (x, y, entity)) in list(self.map.entities.items()):
-					if within_player_bounds and (x < min_x or x > max_x or y < min_y or y > max_y):
-						continue
+					if within_player_bounds:
+						if x < min_x or x > max_x or y < min_y or y > max_y:
+							if not invert_bounds: continue
+						elif invert_bounds: continue
 					if (layer == -1 or entity.layer == layer) and isinstance(entity, Emitter):
 						del self.map.entities[id]
 
@@ -152,8 +159,11 @@ class ClearLayerAction(Action):
 				for map in [self.map, self.map.backdrop]:
 					for id, value in map.props.items():
 						prop_layer, x, y, prop = value
-						if within_player_bounds and (x < min_x or x > max_x or y < min_y or y > max_y):
-							continue
+						if within_player_bounds:
+							if x < min_x or x > max_x or y < min_y or y > max_y:
+								if not invert_bounds: continue
+							elif invert_bounds:
+								continue
 						if (layer == -1 or prop_layer == layer) and (sublayer == -1 or prop.layer_sub == sublayer):
 							props_del.append((map, id))
 
@@ -164,8 +174,10 @@ class ClearLayerAction(Action):
 				tiles_del = []
 				for id, tile in self.map.tiles.items():
 					tile_layer, x, y = id
-					if within_player_bounds and (x < min_x or x > max_x or y < min_y or y > max_y):
-						continue
+					if within_player_bounds:
+						if x < min_x or x > max_x or y < min_y or y > max_y:
+							if not invert_bounds: continue
+						elif invert_bounds: continue
 					if layer == -1 or tile_layer == layer:
 						tiles_del.append(id)
 
@@ -200,8 +212,10 @@ class ClearLayerAction(Action):
 			if not type is None:
 				entities_del = []
 				for (id, (x, y, entity)) in list(entities.items()):
-					if within_player_bounds and (x < min_x or x > max_x or y < min_y or y > max_y):
-						continue
+					if within_player_bounds:
+						if x < min_x or x > max_x or y < min_y or y > max_y:
+							if not invert_bounds: continue
+						elif invert_bounds: continue
 					if entity.type == type or clear_all:
 						entities_del.append(id)
 						if type == 'AI_controller':
