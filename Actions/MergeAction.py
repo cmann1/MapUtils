@@ -119,7 +119,7 @@ class MergeAction(Action):
 				if x < min_x or x > max_x or y < min_y or y > max_y:
 					entities_del.append(id)
 			for id in entities_del:
-				del map2.entities[id]
+				map2.remove_entity(id)
 
 			# PROPS
 			props_del = []

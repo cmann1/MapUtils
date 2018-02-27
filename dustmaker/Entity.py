@@ -27,7 +27,10 @@ class EntityVarArray:
     self.arr.value[1].append(Var(self.atype, val))
 
   def pop(self, ind = None):
-    return arr.value[1].pop(ind)
+    return self.arr.value[1].pop(ind)
+
+  def clear(self):
+    del self.arr.value[1][:]
 
 class Entity:
   @staticmethod
@@ -86,6 +89,9 @@ class Entity:
     if not name in self.vars:
       self.vars[name] = Var(VarType.ARRAY, (atype, []))
     return EntityVarArray(self.vars[name], atype)
+
+  def remove_from_map(self, map, self_id):
+    pass
 
 class Emitter(Entity):
   TYPE_IDENTIFIER = "entity_emitter"
@@ -338,12 +344,30 @@ class CameraNode(Entity):
   def remap_ids(self, id_map):
     nds = self.nodes()
     for i in range(nds.count()):
-      nds.set(i, id_map[nds.get(i)])
+      node_id = nds.get(i)
+      if node_id in id_map:
+        nds.set(i, id_map[nds.get(i)])
 
   def transform(self, mat):
     scale = math.sqrt(abs(mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0]))
     self.zoom(self.zoom() * scale)
     self.width(self.width() * scale)
+
+  def remove_from_map(self, map, self_id):
+    nds = self.nodes()
+    for i in range(nds.count()):
+      nds_id = nds.get(i)
+      if nds_id in map.entities:
+        map.entities[nds_id][2].remove_node(self_id)
+    nds.clear()
+
+  def remove_node(self, id):
+    nds = self.nodes()
+    for i in range(nds.count()):
+      if nds.get(i) == id:
+        nds.pop(i)
+        break
+
 
 known_types.append(CameraNode)
 

@@ -216,6 +216,11 @@ class Map:
     """ Returns the y position of the entity with the given id or None. """
     return self.entities.get(id, (None, None, None))[1]
 
+  def remove_entity(self, id):
+    if id in self.entities:
+      self.entities[id][2].remove_from_map(self, id)
+      del self.entities[id]
+
   def translate(self, x, y):
     """ Translate the entire map x tiles laterally and y tiles horizontally.
 
