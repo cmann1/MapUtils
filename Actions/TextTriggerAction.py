@@ -62,7 +62,7 @@ class TextTriggerAction(Action):
 		top_frame.grid(column=0, row=0, sticky=(tk.N, tk.S, tk.W, tk.E), padx=0, pady=0)
 
 		self.list_var.set(list_items)
-		lbox = self.listbox =tk.Listbox(top_frame, listvariable=self.list_var, width=30, height=25)
+		lbox = self.listbox =tk.Listbox(top_frame, listvariable=self.list_var, width=30, height=25, exportselection=False)
 		lbox.grid(column=0, row=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(PADDING, 0), pady=PADDING)
 		lbox.config(font='Helvetica 11')
 		lbox.bind('<<ListboxSelect>>', self.on_select)
