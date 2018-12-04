@@ -97,6 +97,7 @@ class MainApplication(tk.Frame):
 			('Replace Dust', Actions.ReplaceDustAction(self)),
 			('Tile Borders', Actions.TileBorders(self)),
 			('-', None),
+			('Set Tile Sprites', Actions.SetTileSpritesAction(self)),
 			('Move Props', Actions.MoveSublayerAction(self)),
 			('Text Triggers', Actions.TextTriggerAction(self)),
 			# ('Render', Actions.RenderAction(self))

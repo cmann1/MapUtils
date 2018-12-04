@@ -167,7 +167,7 @@ class SwapLayerAction(Action):
 					if x < min_x or x > max_x or y < min_y or y > max_y:
 						continue
 
-				new_tile = copy_func.copy(tile)
+				new_tile = copy_func.deepcopy(tile)
 				if only_solid:
 					has_edge = False
 					for side in TileSide:

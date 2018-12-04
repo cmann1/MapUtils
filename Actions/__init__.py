@@ -12,4 +12,5 @@ from .MoveSublayerAction import MoveSublayerAction
 from .TextTriggerAction import TextTriggerAction
 from .TileBorders import TileBorders
 from .ExtractThumbAction import ExtractThumbAction
+from .SetTileSpritesAction import SetTileSpritesAction
 # from .RenderAction import RenderAction

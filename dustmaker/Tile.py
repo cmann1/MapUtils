@@ -187,6 +187,7 @@ class Tile:
       self.dust_data = bytearray(_dust_data)
 
   def edge_bits(self, side, val = None):
+
     """ Returns the 4 bit number associated with `side` surface of the tile.
         I'm unsure what each bit means currently.  Set all to 0 to freely move
         through that side of the tile and to 0xF to cause collisions.
