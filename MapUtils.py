@@ -10,9 +10,9 @@ from CreateToolTip import *
 
 import dustmaker
 
-from Settings import *
 import Actions
 from Config import Config
+
 
 class MainApplication(tk.Frame):
 	def __init__(self, root, *args, **kwargs):
@@ -33,7 +33,7 @@ class MainApplication(tk.Frame):
 		HPADDING = PADDING / 2
 
 		root.title('Map Utils')
-		root.iconbitmap(default=FILES_ROOT + 'dustman.ico')
+		root.iconbitmap(default='files/dustman.ico')
 		root.columnconfigure(0, weight=1)
 		root.rowconfigure(0, weight=1)
 		root.resizable(0,0)
