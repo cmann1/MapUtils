@@ -271,7 +271,10 @@ class MainApplication(tk.Frame):
 	
 # END MainApplication
 
-if __name__ == '__main__':
+def run():
 	root = tk.Tk()
 	MainApplication(root)
 	root.mainloop()
+
+if __name__ == '__main__':
+	run()
